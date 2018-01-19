@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import numpy as np
 import pdb
-from network import FC
+from .network import FC
 
 
 

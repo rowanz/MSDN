@@ -46,7 +46,7 @@ def generate_anchors_bak(ratios=[0.5, 1, 2],
     base_anchor = np.array([1, 1, base_size, base_size]) - 1
     ratio_anchors = _ratio_enum(base_anchor, ratios)
     anchors = np.vstack([_scale_enum(ratio_anchors[i, :], scales)
-                         for i in xrange(ratio_anchors.shape[0])])
+                         for i in range(ratio_anchors.shape[0])])
     return anchors
 
 
@@ -123,6 +123,6 @@ if __name__ == '__main__':
     import time
     t = time.time()
     a = generate_anchors()
-    print time.time() - t
-    print a
+    print(time.time() - t)
+    print(a)
     from IPython import embed; embed()

@@ -7,7 +7,7 @@
 
 import numpy as np
 from sympy.physics.paulialgebra import delta
-from config import cfg
+from .config import cfg
 
 np.seterr(all='warn')
 

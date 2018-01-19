@@ -11,9 +11,9 @@ os.chdir('../')
 
 ## Loading data
 image_data = json.load(open('image_data.json'))
-print('image data length: ' + str(len(image_data)))
+print(('image data length: ' + str(len(image_data))))
 relationships_data = json.load(open('relationships.json'))
-print('relationship data length: ' + str(len(relationships_data)))
+print(('relationship data length: ' + str(len(relationships_data))))
 
 ## The subject and object should be none
 en_dict = enchant.Dict("en_US")
@@ -71,33 +71,33 @@ for d_id,rs in enumerate(relationships_data):
                     (r['object']['x'], r['object']['y'], r['object']['x'] + r['object']['w'], \
                      r['object']['y'] + r['object']['h'])
             relationship_item['predicate'] = normalized_predicate
-            if 'relationships' not in im_relationships.keys():
+            if 'relationships' not in list(im_relationships.keys()):
                 im_relationships['relationships'] = [relationship_item]
             else:
                 im_relationships['relationships'].append(relationship_item)
             relationship_count += 1
         except Exception as inst:
-            print inst
-            print d_id
-            print r_id
+            print(inst)
+            print(d_id)
+            print(r_id)
             # raw_input("Press Enter to continue...")
-            print('({}, {}): [{}]-[{}]-[{}]\n'.format(d_id, r_id, r['subject']['name'], r['predicate'], r['object']['name']))
-            print('Error: [{}]-[{}]-[{}]\n'.format(r['subject']['name'].encode('ascii', 'replace'), r['predicate'].encode('ascii', 'replace'), r['object']['name'].encode('ascii', 'replace')))
+            print(('({}, {}): [{}]-[{}]-[{}]\n'.format(d_id, r_id, r['subject']['name'], r['predicate'], r['object']['name'])))
+            print(('Error: [{}]-[{}]-[{}]\n'.format(r['subject']['name'].encode('ascii', 'replace'), r['predicate'].encode('ascii', 'replace'), r['object']['name'].encode('ascii', 'replace'))))
             #  raw_input('Press Enter to continue...')
             pass
     if d_id%5000 == 0:
-        print(str(d_id) + ' images processed, ' + str(relationship_count) + ' relationships')
+        print((str(d_id) + ' images processed, ' + str(relationship_count) + ' relationships'))
 
-    if 'relationships' in im_relationships.keys():
+    if 'relationships' in list(im_relationships.keys()):
         im_relationships['path'] = str(image_data[d_id]['image_id']) + '.jpg'
         im_relationships['width'] = image_data[d_id]['width']
         im_relationships['height'] = image_data[d_id]['height']
         relationships[d_id] = im_relationships
 
 del relationships_data
-print('Currently, we have ' + str(relationship_count) + ' relationship tuples and {} images'.format(len(relationships.keys())))
-print('Spelling error: {}'.format(spelling_error_counter))
-print('Length matching error: {}'.format(length_matching_counter))
+print(('Currently, we have ' + str(relationship_count) + ' relationship tuples and {} images'.format(len(list(relationships.keys())))))
+print(('Spelling error: {}'.format(spelling_error_counter)))
+print(('Length matching error: {}'.format(length_matching_counter)))
 # print('word mismatch error: {}'.format(word_mismatch_counter))
 
 if __name__ == "__main__":
@@ -121,9 +121,9 @@ if __name__ == "__main__":
                     f.write('\n')
                 output_counter += 1
                 if output_counter % 1000 == 0:
-                    print('{}/{} images processed'.format(output_counter, len(relationships.keys())))
+                    print(('{}/{} images processed'.format(output_counter, len(list(relationships.keys())))))
 
-        print('Result output to: {}'.format(output_path))
+        print(('Result output to: {}'.format(output_path)))
 
 
     os.chdir(current_dir)

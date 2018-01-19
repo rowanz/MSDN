@@ -13,7 +13,7 @@ def get_model_name(arguments):
         arguments.model_name += '_nesterov'
 
     if arguments.MPS_iter < 0:
-        print 'Using random MPS iterations to training'
+        print('Using random MPS iterations to training')
         arguments.model_name += '_rand_iters'
     else:
         arguments.model_name += '_{}_iters'.format(arguments.MPS_iter)
@@ -82,10 +82,10 @@ def group_features(net_):
     language_features = list(net_.caption_prediction.parameters())
     language_feature_len = len(language_features)
     hdn_features = list(net_.parameters())[(rpn_feature_len + vgg_feature_len):(-1 * language_feature_len)]
-    print 'vgg feature length:', vgg_feature_len
-    print 'rpn feature length:', rpn_feature_len
-    print 'HDN feature length:', len(hdn_features)
-    print 'language_feature_len:', language_feature_len
+    print('vgg feature length:', vgg_feature_len)
+    print('rpn feature length:', rpn_feature_len)
+    print('HDN feature length:', len(hdn_features))
+    print('language_feature_len:', language_feature_len)
     return vgg_features_fix, vgg_features_var, rpn_features, hdn_features, language_features
 
 
@@ -125,7 +125,7 @@ def check_relationship_recall(gt_objects, gt_relationships,
 
     for idx, top_N in enumerate(top_Ns):
 
-        for gt_id in xrange(rel_cnt):
+        for gt_id in range(rel_cnt):
             fg_candidate = np.where(np.logical_and(
                 sub_overlaps[:top_N, gt_id] >= thres, 
                 obj_overlaps[:top_N, gt_id] >= thres))[0]

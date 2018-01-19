@@ -38,7 +38,7 @@ class FC(nn.Module):
 def save_net(fname, net):
     import h5py
     h5f = h5py.File(fname, mode='w')
-    for k, v in net.state_dict().items():
+    for k, v in list(net.state_dict().items()):
         h5f.create_dataset(k, data=v.cpu().numpy())
         #print '[Saved]: {}'.format(k)
 
@@ -47,16 +47,16 @@ def load_net(fname, net):
     import h5py
     h5f = h5py.File(fname, mode='r')
     try:
-        for k, v in net.state_dict().items():
+        for k, v in list(net.state_dict().items()):
             if k in h5f:
                 param = torch.from_numpy(np.asarray(h5f[k]))
                 v.copy_(param)
-                print '[Copied]: {}'.format(k)
+                print('[Copied]: {}'.format(k))
             else:
-                print '[Missed]: {}'.format(k)
+                print('[Missed]: {}'.format(k))
     except Exception as e:
         pdb.set_trace()
-        print '[Loaded net not complete] Parameter[{}] Size Mismatch...'.format(k)
+        print('[Loaded net not complete] Parameter[{}] Size Mismatch...'.format(k))
         
 
 

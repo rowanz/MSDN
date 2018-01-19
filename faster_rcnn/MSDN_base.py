@@ -9,18 +9,18 @@ import torch.utils.model_zoo as model_zoo
 import torchvision.models as models
 import os.path as osp
 
-from utils.timer import Timer
-from utils.blob import im_list_to_blob
-from fast_rcnn.nms_wrapper import nms
-from fast_rcnn.bbox_transform import bbox_transform_inv_hdn, clip_boxes
-from fast_rcnn.config import cfg
-from utils.cython_bbox import bbox_overlaps
+from .utils.timer import Timer
+from .utils.blob import im_list_to_blob
+from .fast_rcnn.nms_wrapper import nms
+from .fast_rcnn.bbox_transform import bbox_transform_inv_hdn, clip_boxes
+from .fast_rcnn.config import cfg
+from .utils.cython_bbox import bbox_overlaps
 
-import network
-from network import Conv2d, FC
+from . import network
+from .network import Conv2d, FC
 # from roi_pooling.modules.roi_pool_py import RoIPool
-from roi_pooling.modules.roi_pool import RoIPool
-from vgg16 import VGG16
+from .roi_pooling.modules.roi_pool import RoIPool
+from .vgg16 import VGG16
 
 import pdb
 
@@ -41,7 +41,7 @@ class HDN_base(nn.Module):
     PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
     SCALES = (600,)
     MAX_SIZE = 1000
-    MPS_iter_range = range(1, cfg.TRAIN.MAX_MPS_ITER_NUM + 1)
+    MPS_iter_range = list(range(1, cfg.TRAIN.MAX_MPS_ITER_NUM + 1))
 
     def __init__(self, nhidden, n_object_cats, n_predicate_cats, n_vocab, voc_sign, 
                  max_word_length, MPS_iter, use_language_loss, object_loss_weight, 
@@ -56,7 +56,7 @@ class HDN_base(nn.Module):
         if rnn_type == 'LSTM_normal':
             nembedding = nhidden
         if MPS_iter < 0:
-            print 'Use random interation from 1 to 5'
+            print('Use random interation from 1 to 5')
 
         self.n_classes_obj = n_object_cats
         self.n_classes_pred = n_predicate_cats
@@ -85,7 +85,7 @@ class HDN_base(nn.Module):
 
     def reinitialize_fc_layers(self):
 
-        print 'Reinitialize the fc layers...',
+        print('Reinitialize the fc layers...', end=' ')
         weight_multiplier = 4096. / self.nhidden
         vgg16 = models.vgg16(pretrained=True)
         self.fc6_obj.fc.weight.data.copy_(vgg16.classifier[0].weight.data[:self.nhidden] * weight_multiplier)
@@ -102,7 +102,7 @@ class HDN_base(nn.Module):
         self.fc7_region.fc.weight.data.copy_(vgg16.classifier[3].weight.data[:self.nhidden, :self.nhidden] * weight_multiplier)
         self.fc7_region.fc.bias.data.copy_(vgg16.classifier[3].bias.data[:self.nhidden])
         # network.weights_normal_init(self.caption_prediction, 0.01)
-        print 'Done.'
+        print('Done.')
 
 
     @property
@@ -280,7 +280,7 @@ class HDN_base(nn.Module):
 
         pairs = {'fc6.fc': 'fc6', 'fc7.fc': 'fc7', 'score_fc.fc': 'cls_score', 'bbox_fc.fc': 'bbox_pred'}
         own_dict = self.state_dict()
-        for k, v in pairs.items():
+        for k, v in list(pairs.items()):
             key = '{}.weight'.format(k)
             param = torch.from_numpy(params['{}/weights:0'.format(v)]).permute(1, 0)
             own_dict[key].copy_(param)

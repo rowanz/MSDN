@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from PIL import Image
 import os
 import os.path as osp
@@ -48,15 +48,15 @@ class visual_genome(data.Dataset):
 
         self._object_classes = tuple(['__background__'] + cats['object'])
         self._predicate_classes = tuple(['__background__'] + cats['predicate'])
-        self._object_class_to_ind = dict(zip(self.object_classes, xrange(self.num_object_classes)))
-        self._predicate_class_to_ind = dict(zip(self.predicate_classes, xrange(self.num_predicate_classes)))
+        self._object_class_to_ind = dict(list(zip(self.object_classes, list(range(self.num_object_classes)))))
+        self._predicate_class_to_ind = dict(list(zip(self.predicate_classes, list(range(self.num_predicate_classes)))))
         self.inverse_weight_object = torch.ones(self.num_object_classes)
-        for idx in xrange(1, self.num_object_classes):
+        for idx in range(1, self.num_object_classes):
             self.inverse_weight_object[idx] = inverse_weight['object'][self._object_classes[idx]]
         self.inverse_weight_object = self.inverse_weight_object / self.inverse_weight_object.min()
         # print self.inverse_weight_object
         self.inverse_weight_predicate = torch.ones(self.num_predicate_classes)
-        for idx in xrange(1, self.num_predicate_classes):
+        for idx in range(1, self.num_predicate_classes):
             self.inverse_weight_predicate[idx] = inverse_weight['predicate'][self._predicate_classes[idx]]
         self.inverse_weight_predicate = self.inverse_weight_predicate / self.inverse_weight_predicate.min()
         # print self.inverse_weight_predicate
@@ -97,11 +97,15 @@ class visual_genome(data.Dataset):
         gt_boxes_object[:, 0:4] = torch.FloatTensor([obj['box'] for obj in _annotation['objects']]) * im_scale
         gt_boxes_region[:, 0:4] = torch.FloatTensor([reg['box'] for reg in _annotation['regions']]) * im_scale
         gt_boxes_object[:, 4]   = torch.FloatTensor([obj['class'] for obj in _annotation['objects']])
-        gt_boxes_region[:, 4:]  = torch.FloatTensor([np.pad(reg['phrase'], 
-                                    (0,self.max_size-len(reg['phrase'])),'constant',constant_values=self.voc_sign['end']) 
-                                        for reg in _annotation['regions']])
+
+
+        np_stuff = np.array([np.pad(reg['phrase'], (0,self.max_size-len(reg['phrase'])),'constant',constant_values=self.voc_sign['end'])
+                          for reg in _annotation['regions']]).astype(np.float32)
+
+        gt_boxes_region[:, 4:]  = torch.FloatTensor(np_stuff)
 
         gt_relationships = torch.zeros(len(_annotation['objects']), (len(_annotation['objects']))).type(torch.LongTensor)
+
         for rel in _annotation['relationships']:
             gt_relationships[rel['sub_id'], rel['obj_id']] = rel['predicate']
 

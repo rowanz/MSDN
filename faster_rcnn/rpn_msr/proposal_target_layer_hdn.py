@@ -112,15 +112,15 @@ def proposal_target_layer(object_rois, region_rois, gt_objects, gt_relationships
         count = 1
         fg_num = (object_labels > 0).sum()
         bg_num = (object_labels == 0).sum()
-        print 'object num fg avg: {}'.format(fg_num / count)
-        print 'object num bg avg: {}'.format(bg_num / count)
-        print 'ratio: {:.3f}'.format(float(fg_num) / float(bg_num))
+        print('object num fg avg: {}'.format(fg_num / count))
+        print('object num bg avg: {}'.format(bg_num / count))
+        print('ratio: {:.3f}'.format(float(fg_num) / float(bg_num)))
         count_rel = 1
         fg_num_rel = (phrase_labels > 0).sum()
         bg_num_rel = (phrase_labels == 0).sum()
-        print 'relationship num fg avg: {}'.format(fg_num_rel / count_rel)
-        print 'relationship num bg avg: {}'.format(bg_num_rel / count_rel)
-        print 'ratio: {:.3f}'.format(float(fg_num_rel) / float(bg_num_rel))
+        print('relationship num fg avg: {}'.format(fg_num_rel / count_rel))
+        print('relationship num bg avg: {}'.format(bg_num_rel / count_rel))
+        print('ratio: {:.3f}'.format(float(fg_num_rel) / float(bg_num_rel)))
         # print mat_object.shape
         # print mat_phrase.shape
         # print 'region_roi'
@@ -240,7 +240,7 @@ def _sample_rois(object_rois, region_rois, gt_objects, gt_relationships, gt_regi
     rel_bg_num = rel_per_image
     if fg_inds.size > 0:
         assert fg_inds.size == fg_inds.shape[0]
-        id_i, id_j = np.meshgrid(xrange(fg_inds.size), xrange(fg_inds.size), indexing='ij') # Grouping the input object rois
+        id_i, id_j = np.meshgrid(range(fg_inds.size), range(fg_inds.size), indexing='ij') # Grouping the input object rois
         id_i = id_i.reshape(-1) 
         id_j = id_j.reshape(-1)
         pair_labels = gt_relationships[gt_assignment[fg_inds[id_i]], gt_assignment[fg_inds[id_j]]]
@@ -261,8 +261,8 @@ def _sample_rois(object_rois, region_rois, gt_objects, gt_relationships, gt_regi
         rel_bg_num = rel_per_image - rel_fg_num
 
     phrase_labels = np.zeros(rel_bg_num, dtype=np.float)
-    sub_assignment = npr.choice(xrange(keep_inds.size), size=rel_bg_num, replace=True)
-    obj_assignment = npr.choice(xrange(keep_inds.size), size=rel_bg_num, replace=True)
+    sub_assignment = npr.choice(range(keep_inds.size), size=rel_bg_num, replace=True)
+    obj_assignment = npr.choice(range(keep_inds.size), size=rel_bg_num, replace=True)
     sub_list = keep_inds[sub_assignment]
     obj_list = keep_inds[obj_assignment]
 
@@ -296,7 +296,7 @@ def _setup_connection(object_rois, region_rois, graph_generation=False):
     """
     # overlaps: (rois x gt_boxes)
     roi_num = cfg.TEST.BBOX_NUM
-    keep_inds = np.array(range(min(roi_num, object_rois.shape[0])))
+    keep_inds = np.array(list(range(min(roi_num, object_rois.shape[0]))))
     roi_num = len(keep_inds)
     rois = object_rois[keep_inds]
 
@@ -321,7 +321,7 @@ def _setup_connection(object_rois, region_rois, graph_generation=False):
     if graph_generation:
         keep_inds = np.where(max_overlaps_phrase >= cfg.PHRASE_REGION_OVERLAP_THRESH)[0]
     else:
-        keep_inds = range(region_rois.shape[0])
+        keep_inds = list(range(region_rois.shape[0]))
 
     if len(keep_inds) > region_num:
         keep_inds = npr.choice(keep_inds, size=region_num, replace=False)
@@ -388,7 +388,7 @@ def _sample_regions(region_rois, phrase_rois, gt_regions, num_images, voc_eos):
 
     if bg_inds.size == 0:
         keep_inds = fg_inds
-        print 'No background in this instance'
+        print('No background in this instance')
     else:
         bg_rois_per_this_image = rois_per_image - fg_rois_per_this_image
         bg_rois_per_this_image = min(bg_rois_per_this_image, bg_inds.size)
@@ -447,7 +447,7 @@ def _prepare_mat(sub_list, obj_list, object_batchsize):
     mat_phrase[:, 0] = sub_list
     mat_phrase[:, 1] = obj_list
 
-    for i in xrange(phrase_batchsize):
+    for i in range(phrase_batchsize):
         mat_object[sub_list[i], 0, i] = 1
         mat_object[obj_list[i], 1, i] = 1
 
@@ -459,9 +459,9 @@ def _generate_pairs(ids):
     id_j = id_j.reshape(-1)
     # remove the diagonal items
     id_num = len(ids)
-    diagonal_items = np.array(range(id_num))
+    diagonal_items = np.array(list(range(id_num)))
     diagonal_items = diagonal_items * id_num + diagonal_items
-    all_id = range(len(id_i))
+    all_id = list(range(len(id_i)))
     selected_id = np.setdiff1d(all_id, diagonal_items)
     id_i = id_i[selected_id]
     id_j = id_j[selected_id]
